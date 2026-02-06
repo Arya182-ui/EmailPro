@@ -1,0 +1,174 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  password        String
+  firstName       String
+  lastName        String
+  role            String   @default("USER") // USER, ADMIN
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  smtpAccounts    SmtpAccount[]
+  templates       Template[]
+  campaigns       Campaign[]
+
+  @@map("users")
+}
+
+model SmtpAccount {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String   // Display name for this SMTP account
+  host            String
+  port            Int
+  secure          Boolean
+  username        String
+  password        String   // Encrypted
+  fromName        String
+  fromEmail       String
+  dailyLimit      Int      @default(100)
+  delayMin        Int      @default(30)   // seconds
+  delayMax        Int      @default(180)  // seconds
+  isActive        Boolean  @default(true)
+  lastUsed        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailLogs       EmailLog[]
+  dailySendingLimits DailySendingLimit[]
+
+  @@map("smtp_accounts")
+}
+
+model Template {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  subject         String
+  htmlBody        String
+  variables       String   // JSON string of variable names like ["name", "email", "company"]
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaigns       Campaign[]
+
+  @@map("templates")
+}
+
+model Campaign {
+  id              String        @id @default(cuid())
+  userId          String
+  smtpAccountIds  String        // JSON array of SMTP account IDs
+  templateId      String
+  name            String
+  status          String        @default("DRAFT") // DRAFT, SCHEDULED, RUNNING, PAUSED, COMPLETED, FAILED, CANCELLED
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  pausedAt        DateTime?
+  totalRecipients Int           @default(0)
+  sentCount       Int           @default(0)
+  failedCount     Int           @default(0)
+  bounceCount     Int           @default(0)
+  bounceRate      Float         @default(0.0)
+  settings        String        // JSON string of campaign-specific settings
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template        Template      @relation(fields: [templateId], references: [id])
+  recipients      CampaignRecipient[]
+  emailLogs       EmailLog[]
+
+  @@map("campaigns")
+}
+
+model CampaignRecipient {
+  id              String   @id @default(cuid())
+  campaignId      String
+  email           String
+  firstName       String?
+  lastName        String?
+  customData      String?  // JSON string of additional custom fields
+  status          String   @default("PENDING") // PENDING, SENT, FAILED, BOUNCED
+  sentAt          DateTime?
+  failedReason    String?
+  smtpAccountId   String?
+  createdAt       DateTime @default(now())
+
+  // Relations
+  campaign        Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  emailLogs       EmailLog[]
+
+  @@map("campaign_recipients")
+}
+
+model EmailLog {
+  id              String      @id @default(cuid())
+  campaignId      String
+  recipientId     String
+  smtpAccountId   String
+  status          String        @default("PENDING") // PENDING, QUEUED, SENT, FAILED, BOUNCED, DELIVERED
+  subject         String
+  sentAt          DateTime?
+  failedAt        DateTime?
+  errorMessage    String?
+  messageId       String?     // SMTP message ID
+  bounceReason    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  campaign        Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  recipient       CampaignRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  smtpAccount     SmtpAccount @relation(fields: [smtpAccountId], references: [id], onDelete: Cascade)
+
+  @@map("email_logs")
+}
+
+model DailySendingLimit {
+  id              String   @id @default(cuid())
+  smtpAccountId   String
+  date            DateTime
+  sentCount       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  smtpAccount   SmtpAccount @relation(fields: [smtpAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([smtpAccountId, date])
+  @@map("daily_sending_limits")
+}
+
+model AdminSettings {
+  id                     String   @id @default(cuid())
+  registrationEnabled    Boolean  @default(true)
+  registrationMessage    String   @default("Registration is currently closed. Please contact administrator if you want to register.")
+  maxUsersAllowed        Int      @default(100)
+  maintenanceMode        Boolean  @default(false)
+  maintenanceMessage     String   @default("System is under maintenance. Please try again later.")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("admin_settings")
+}

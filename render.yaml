@@ -1,0 +1,34 @@
+services:
+  # Backend Service (API)
+  - type: web
+    name: email-automation-backend
+    env: node
+    runtime: node
+    buildCommand: npm install && npm run build && npx prisma generate && npx prisma migrate deploy
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: email-automation-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: email-automation-redis
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://your-app-name.vercel.app
+    healthCheckPath: /health
+
+databases:
+  # PostgreSQL Database
+  - name: email-automation-db
+    databaseName: email_automation
+    user: admin
+
+  # Redis Cache
+  - type: redis
+    name: email-automation-redis
+    maxmemoryPolicy: allkeys-lru
