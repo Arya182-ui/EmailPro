@@ -268,7 +268,7 @@ BCRYPT_ROUNDS=12
 
 ## 🚀 Production Deployment
 
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for comprehensive VPS deployment instructions including:
+See VPS deployment instructions, including:
 - Server setup and configuration
 - Database and Redis installation
 - SSL certificate setup
