@@ -2,11 +2,6 @@
 
 A comprehensive self-hosted email automation platform that allows multiple users to safely send scheduled, rate-limited emails from multiple SMTP accounts with advanced deliverability features.
 
-## 🚀 Live Demo
-- **Frontend**: Deploy on Vercel (Free)
-- **Backend**: Deploy on Render (Free)
-- **Total Cost**: $0/month for MVP testing
-
 ## ✨ Features
 
 - **Multi-User Authentication**: Secure JWT-based user registration and login
@@ -324,10 +319,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 For support and questions:
-- Check the [deployment guide](docs/DEPLOYMENT.md)
-- Review API documentation
 - Check logs for error details
 - Ensure all services are running
+- Verify SMTP credentials and configuration
+- Consult documentation for troubleshooting tips
+- Open an issue on GitHub if you need further assistance
+- Send mail to arya119000@gmail.com
 
 ## ⚠️ Important Notes
 
