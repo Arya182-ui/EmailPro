@@ -1,6 +1,6 @@
-# Email Automation Platform 📧
+# Email Automation Platform for small and Medium StartUps📧
 
-A comprehensive self-hosted email automation platform that allows multiple users to safely send scheduled, rate-limited emails from multiple SMTP accounts with advanced deliverability features.
+A comprehensive self-hosted email automation platform that allows multiple users to send scheduled, rate-limited emails from multiple SMTP accounts with advanced deliverability features.
 
 ## ✨ Features
 
@@ -64,8 +64,8 @@ SMTP Servers → Recipients
 
 1. **Clone Repository**
    ```bash
-   git clone <repository-url>
-   cd email-automation-platform
+   git clone https://github.com/Arya182-ui/EmailPro.git
+   cd EmailPro
    ```
 
 2. **Backend Setup**
@@ -203,25 +203,25 @@ BCRYPT_ROUNDS=12
 
 ## 🎯 Usage Guide
 
-### 1. Setup SMTP Account
-1. Navigate to "SMTP Accounts"
-2. Click "Add SMTP Account"
+### 1. Set up SMTP Account
+1. Navigate to "SMTP Accounts."
+2. Click "Add SMTP Account."
 3. Enter SMTP server details (host, port, credentials)
 4. Test connection before saving
 
 ### 2. Create Email Template
-1. Go to "Templates"
-2. Click "Create Template"
+1. Go to "Templates."
+2. Click "Create Template."
 3. Design your email with variables like `{{firstName}}`, `{{company}}`
 4. Include unsubscribe link: `{{unsubscribe_url}}`
 
 ### 3. Upload Recipients
-1. Prepare Excel file with columns: email, firstName, lastName, company
+1. Prepare an Excel file with columns: email, firstName, lastName, company
 2. In campaign creation, upload your Excel file
 3. Review parsed data and fix any validation errors
 
 ### 4. Create Campaign
-1. Navigate to "Campaigns"
+1. Navigate to "Campaigns."
 2. Select SMTP account and template
 3. Upload recipients
 4. Schedule or start immediately
